@@ -116,6 +116,10 @@ function compare($group, $line) {
 
 		$operator = isset($group['op']) ? $group['op'] : '=';
 
+		if(is_array($line)) {
+			$line = json_encode($line);
+		}
+		
 		switch($operator) {
 			case '=':
 				return $line == $group['data'];
@@ -137,6 +141,9 @@ function compare($group, $line) {
 				break;
 			case 'contains':
 				return strpos($line, $group['data']) !== false;
+				break;
+			case 'missing':
+				return strpos($line, $group['data']) === false;
 				break;
 			case 'regex':
 				return preg_match("/${group['data']}/i", $line);
