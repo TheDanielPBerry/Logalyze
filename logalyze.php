@@ -36,6 +36,7 @@
 //////////////////  End Filters  ///////////////////////
 
 	$lines = explode("\r\n", tailCustom($filename, -$tailLength));
+	$timeSum = 0;
 
 	$extrude = array();
 	foreach($lines as $i => $l) {
@@ -52,15 +53,21 @@
 				}
 				if($flag) {
 					$extrude[] = $line;
+					if(isset($line['timetocomplete'])) {
+						$timeSum += floatval($line['timetocomplete']);
+					}
+					
 					continue 2;
 				}
 			}
 		} else {
 			$extrude[] = $line;
-		} 
-
-
+			if(isset($line['timetocomplete'])) {
+				$timeSum += floatval($line['timetocomplete']);
+			}
+		}
 	}
+	
 	if(isset($sort)) {
 		usort($extrude, function($a, $b) use($sort) {
 			if(isset($a[$sort['field']]) && isset($b[$sort['field']])) {
@@ -81,6 +88,12 @@
 	print_r(json_encode($filters, JSON_PRETTY_PRINT));
 	echo "<br/>Sorting: <br/>";
 	print_r(json_encode($sort, JSON_PRETTY_PRINT));
+
+	echo "<br/><br/>Total Timetocomplete: <br/>";
+	echo $timeSum . 's<br/>';
+
+	echo "<br/>Average Timetocomplete: <br/>";
+	echo ($timeSum/count($extrude)) . 's<br/>';
 
 	echo "<br/><br/>Log Data (".count($extrude)." events):</b><br/><br/>"; 
 	print_r(json_encode($extrude, JSON_PRETTY_PRINT));
