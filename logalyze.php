@@ -18,7 +18,7 @@
 		);
 	}
 
-	
+
 	if(isset($_GET['filters'])) {
 		$filters = json_decode($_GET['filters'], true);
 	}
@@ -48,7 +48,6 @@
 		$date = $_GET['date'];
 	}
 	$filename = DIR_LOGS . ALIAS . '\\' . $date . '\\' . $date . '.log';
-	//$filename = DIR_LOGS . ALIAS . '\\2020-12-31\\2020-12-31.log';
 ///////////// END FILTERS ////////////////
 
 
@@ -110,9 +109,15 @@
 				<textarea name="filters" cols="100" rows="20"><?print_r(json_encode($filters, JSON_PRETTY_PRINT)); ?></textarea>
 				<br/>
 				<input type="submit" /><input type="submit" value="&#x29c9;" formtarget="_blank" />
-				<input type="date" value="<?=$date?>" name="date" />
+				<input type="date" value="<?=$date?>" name="date" max="<?=date('Y-m-d') ?>" />
 			</form>
 		<?
+
+		if(empty($extrude)) {
+			echo "No Matching Events";
+			exit;
+		}
+		
 		echo "<br/>Sorting:";
 		if($sort['field'] == 'timetocomplete') {?>
 			timetocomplete -> 
@@ -134,8 +139,11 @@
 		foreach($extrude as $event) { 
 			$url = $_SERVER['REQUEST_URI'];
 		?>
-<div style="background-color:#FAFAFA; margin:1em;"><a href="<?=$url.'&timestamp='.$event['timestamp']?>"><b>timestamp:</b> <?=$event['timestamp'] ?></a>		<a href="<?=$url.'&type='.$event['type']?>"><b>type:</b> <?=$event['type'] ?></a>	
-<a href="<?=$url.'&timetocomplete='.$event['timetocomplete']?>"><b>timetocomplete:</b> <?=$event['timetocomplete'] ?></a>		<a href="<?=$url.'&token='.$event['token']?>"><b>token:</b> <?=$event['token'] ?></a>		<a href="<?=$url.'&url='.urlencode($event['url'])?>"><b>url:</b> <?=$event['url'] ?></a><br/><? 
+<div style="background-color:#FAFAFA; margin:1em;"><a href="<?=$url.'&timestamp='.$event['timestamp']?>"><b>timestamp:</b> <?=$event['timestamp'] ?></a>	
+	<a href="<?=$url.'&type='.$event['type']?>"><b>type:</b> <?=$event['type'] ?></a>	
+<a href="<?=$url.'&timetocomplete='.$event['timetocomplete']?>"><b>timetocomplete:</b> <?=$event['timetocomplete'] ?></a>		<a href="<?=
+$url.'&token='.$event['token']?>"><b>token:</b> <?=$event['token'] ?></a>		<a href="<?=$url.'&url='.urlencode($event['url'])?>"><b>url:</b> 
+<?=$event['url'] ?></a><br/><? 
 if($event['type'] == 'fbapi') {
 	$event['data']['Rq'] = json_decode($event['data']['Rq']);
 }
